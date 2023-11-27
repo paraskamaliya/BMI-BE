@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { ListModel } = require("../model/list.model");
+const { ListModel } = require("../Model/list.model");
 const auth = async (req, res, next) => {
     const token = req.headers.authorization?.split(" ")[1];
     if (token) {
