@@ -20,38 +20,38 @@ userRouter.post("/register", async (req, res) => {
                         name, email, password: hash, age, avatar, history
                     })
                     await user.save()
-                    res.status(200).send({ "message": "Successfully registered", user })
+                    res.status(200).send({ "message": "Successfully registered", "userDetails": user })
                 }
                 else {
-                    res.status(202).send({ "message": "Something went wrong.", err })
+                    res.status(202).send({ "message": "Something went wrong.", "error": err })
                 }
             })
         }
     } catch (error) {
-        res.status(400).send({ "message": "Something went wrong", error, ok: false })
+        res.status(400).send({ "message": "Something went wrong", error })
     }
 })
 
 userRouter.post("/login", async (req, res) => {
     const { email, password } = req.body;
+    const user = await UserModel.findOne({ email });
     try {
-        const user = await UserModel.findOne({email});
         if (user) {
             bcrypt.compare(password, user.password, (err, result) => {
                 if (result) {
-                    const token = jwt.sign({ username: user.username, userId: user._Id }, "users", { expiresIn: "1h" });
-                    res.status(200).send({ "message": "Successfully logged in", token, ok: true })
+                    const token = jwt.sign({ username: user.username, userId: user._id }, "users", { expiresIn: "1h" });
+                    res.status(200).send({ "message": "Successfully logged in", "token": token })
                 }
                 else {
-                    res.status(201).send({ "message": "Something went wrong", ok: false, err })
+                    res.status(201).send({ "message": "Something went wrong", "error": err })
                 }
             })
         }
         else {
-            res.status(201).send({ "message": "User is not present, Please Register", ok: false })
+            res.status(201).send({ "message": "User is not present, Please Register" })
         }
     } catch (error) {
-        res.status(400).send({ "message": "Something went wrong", error, ok: false })
+        res.status(400).send({ "message": "Something went wrong", "error": error })
     }
 })
 
@@ -70,9 +70,10 @@ userRouter.patch("/:id/update", auth, async (req, res) => {
     const { id } = req.params;
     try {
         await UserModel.findByIdAndUpdate({ _id: id }, req.body);
-        res.status(200).send({ "message": "user is updated", ok: true, user })
+        let user = await UserModel.findOne({ _id })
+        res.status(200).send({ "message": "user is updated", "userDetails": user })
     } catch (error) {
-        res.status(400).send({ "message": "Something went wrong", ok: false, error })
+        res.status(400).send({ "message": "Something went wrong", error })
     }
 })
 
