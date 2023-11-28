@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const express = require("express");
 const { UserModel } = require("../Model/userModel.model");
 const { auth } = require("../Middlewares/auth.middleware");
+const { ListModel } = require("../Model/listModel.model");
 const userRouter = express.Router();
 
 userRouter.post("/register", async (req, res) => {
@@ -34,7 +35,7 @@ userRouter.post("/register", async (req, res) => {
 userRouter.post("/login", async (req, res) => {
     const { email, password } = req.body;
     try {
-        const user = await UserModel.findOne(email);
+        const user = await UserModel.findOne({email});
         if (user) {
             bcrypt.compare(password, user.password, (err, result) => {
                 if (result) {
@@ -68,7 +69,7 @@ userRouter.get("/logout", async (req, res) => {
 userRouter.patch("/:id/update", auth, async (req, res) => {
     const { id } = req.params;
     try {
-        await UserModel.findByIdAndUpdate({ _Id: id }, req.body);
+        await UserModel.findByIdAndUpdate({ _id: id }, req.body);
         res.status(200).send({ "message": "user is updated", ok: true, user })
     } catch (error) {
         res.status(400).send({ "message": "Something went wrong", ok: false, error })
