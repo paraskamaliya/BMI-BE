@@ -73,7 +73,6 @@ userRouter.patch("/:id/update", auth, async (req, res) => {
             bcrypt.hash(req.body.password, 5, async (err, hash) => {
                 if (hash) {
                     req.body.password = hash
-                    console.log(req.body)
                     await UserModel.findByIdAndUpdate({ _id: id }, req.body);
                     let user = await UserModel.findOne({ _id: id })
                     res.status(200).send({ "message": "Successfully registered", "userDetails": user })
