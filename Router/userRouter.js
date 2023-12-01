@@ -77,4 +77,16 @@ userRouter.patch("/:id/update", auth, async (req, res) => {
     }
 })
 
+userRouter.patch("/:id/recent", auth, async (req, res) => {
+    const { id } = req.params;
+    try {
+        let user = await UserModel.findOne({ _id: id });
+        user.history.push(req.body);
+        await UserModel.findByIdAndUpdate({ _id: id }, user);
+        let newUser = await UserModel.findOne({ _id: id });
+        res.status(200).send({ "message": "recent is updated", "userDetails": newUser })
+    } catch (error) {
+        res.status(400).send({ "message": "Something went wrong", error })
+    }
+})
 module.exports = { userRouter };

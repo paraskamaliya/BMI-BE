@@ -10,8 +10,6 @@ const auth = async (req, res, next) => {
         else {
             jwt.verify(token, "users", (err, decoded) => {
                 if (decoded) {
-                    req.body.username = decoded.username;
-                    req.body.userId = decoded.userId;
                     next();
                 }
                 else {
