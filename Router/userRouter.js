@@ -67,11 +67,26 @@ userRouter.get("/logout", async (req, res) => {
 })
 
 userRouter.patch("/:id/update", auth, async (req, res) => {
-    const { id } = req.params;
+    let { id } = req.params;
     try {
-        await UserModel.findByIdAndUpdate({ _id: id }, req.body);
-        let user = await UserModel.findOne({ _id })
-        res.status(200).send({ "message": "user is updated", "userDetails": user })
+        if (req.body.password) {
+            bcrypt.hash(req.body.password, 5, async (err, hash) => {
+                if (hash) {
+                    req.body.password = hash
+                    console.log(req.body)
+                    await UserModel.findByIdAndUpdate({ _id: id }, req.body);
+                    let user = await UserModel.findOne({ _id: id })
+                    res.status(200).send({ "message": "Successfully registered", "userDetails": user })
+                }
+                else {
+                    res.status(202).send({ "message": "Something went wrong.", "error": err })
+                }
+            })
+        } else {
+            await UserModel.findByIdAndUpdate({ _id: id }, req.body);
+            let user = await UserModel.findOne({ _id:id })
+            res.status(200).send({ "message": "user is updated", "userDetails": user })
+        }
     } catch (error) {
         res.status(400).send({ "message": "Something went wrong", error })
     }
