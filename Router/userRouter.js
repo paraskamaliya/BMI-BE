@@ -7,7 +7,7 @@ const { ListModel } = require("../Model/listModel.model");
 const userRouter = express.Router();
 
 userRouter.post("/register", async (req, res) => {
-    const { name, email, password, age, avatar, history } = req.body;
+    const { username, email, password, age, avatar, history } = req.body;
     const user = await UserModel.findOne({ email });
     try {
         if (user) {
@@ -17,7 +17,7 @@ userRouter.post("/register", async (req, res) => {
             bcrypt.hash(password, 5, async (err, hash) => {
                 if (hash) {
                     const user = new UserModel({
-                        name, email, password: hash, age, avatar, history
+                        username, email, password: hash, age, avatar, history
                     })
                     await user.save()
                     res.status(200).send({ "message": "Successfully registered", "userDetails": user })
